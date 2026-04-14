@@ -6,16 +6,37 @@ FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+<<<<<<< HEAD
 # ---- All system packages in one layer ----
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl git make jq xz-utils \
     python3 python3-pip python3-venv \
+=======
+# ---- System packages ----
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git \
+    gnupg \
+    lsb-release \
+    make \
+    jq \
+    python3 \
+    python3-pip \
+    python3-venv \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- Pandoc + LaTeX (for .md → .pdf with rendered equations) ----
+RUN apt-get update && apt-get install -y --no-install-recommends \
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
     pandoc \
     texlive-latex-base \
     texlive-latex-extra \
     texlive-latex-recommended \
     texlive-fonts-recommended \
     lmodern \
+<<<<<<< HEAD
     poppler-utils \
     imagemagick \
     && rm -rf /var/lib/apt/lists/*
@@ -40,6 +61,19 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} \
     && ln -s /opt/uv-venv/bin/uv /usr/local/bin/uv \
     && ln -s /opt/uv-venv/bin/uvx /usr/local/bin/uvx \
     && npm cache clean --force
+=======
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ---- Node.js 20 LTS ----
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- Claude Code ----
+RUN npm install -g @anthropic-ai/claude-code@latest \
+    && claude --version
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 
 # ---- Non-root user ----
 RUN useradd -m -s /bin/bash claude \
@@ -49,9 +83,12 @@ RUN useradd -m -s /bin/bash claude \
 WORKDIR /workspace
 USER claude
 
+<<<<<<< HEAD
 # ---- Pre-cache AWS Document Loader MCP server ----
 RUN uvx awslabs.document-loader-mcp-server@latest --help || true
 
 HEALTHCHECK --interval=60s --timeout=5s CMD node --version || exit 1
 
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 CMD ["/bin/bash"]

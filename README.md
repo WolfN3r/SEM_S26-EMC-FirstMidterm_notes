@@ -24,6 +24,7 @@ Built for the EMC course at **NTUST** (National Taiwan University of Science and
 │
 └── WorkingDir/                         # Mounted as /workspace inside the container
     ├── CLAUDE.md                       # Task instructions Claude reads on startup
+<<<<<<< HEAD
     ├── .mcp.json                       # MCP server config (document-loader)
     ├── LectureSlides/                  # Drop your PDFs here (gitignored)
     │   └── .gitkeep
@@ -36,6 +37,15 @@ Built for the EMC course at **NTUST** (National Taiwan University of Science and
         └── hooks/
             ├── stop-notify.sh          # ntfy.sh notification on session end
             └── build-summary.py        # Summary extraction logic
+=======
+    ├── LectureSlides/                  # Drop your PDFs here (gitignored)
+    │   └── .gitkeep
+    └── .claude/                        # Claude Code project config
+        ├── settings.json               # Statusline + stop hook
+        ├── statusline-command.sh       # Context window progress bar
+        └── hooks/
+            └── stop-notify.sh          # ntfy.sh notification on session end
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 ```
 
 > Only `WorkingDir/` is mounted into the container. Claude cannot see the Dockerfile, Makefile, or `.env`.
@@ -95,10 +105,15 @@ Every equation includes a source citation like *(chap2.pdf, p.15)*.
 | `make claude-attach` | Attach second session to running container |
 | `make start` | Open a plain bash shell in the container |
 | `make verify` | Run all setup checks |
+<<<<<<< HEAD
 | `make check-output` | Verify that expected output files were generated |
 | `make stop` | Stop the running container |
 | `make clean` | Remove container and image |
 | `make clean-all` | Remove container, image, and cache volume |
+=======
+| `make stop` | Stop the running container |
+| `make clean` | Remove container and image |
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 
 ## Notifications
 
@@ -116,8 +131,11 @@ Setup:
 - No Docker socket mounted (no container escape)
 - `.env` is gitignored and excluded from Docker build context
 - `--dangerously-skip-permissions` grants full shell access **inside the container only**
+<<<<<<< HEAD
 - Container resource limits: 8GB memory, 4 CPUs (configurable via `DOCKER_MEMORY` / `DOCKER_CPUS`)
 - All tool versions pinned in Dockerfile (Node.js, Claude Code, uv)
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 - Set a [spending limit](https://console.anthropic.com) on your Anthropic account
 
 ## Output

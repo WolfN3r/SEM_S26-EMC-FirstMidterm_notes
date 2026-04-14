@@ -2,6 +2,7 @@
 # EMC Midterm Preparation — Makefile
 # =============================================================================
 
+<<<<<<< HEAD
 SHELL             := /bin/bash
 
 CLAUDE_IMAGE      := claude-code-emc
@@ -20,6 +21,12 @@ DOCKER_VOLUMES    := -v $(WORKSPACE)/WorkingDir:/workspace -v $(CACHE_VOLUME):/h
 # Environment variables passed into the container
 DOCKER_ENV        := --env ANTHROPIC_API_KEY --env ANTHROPIC_MODEL --env NTFY_TOPIC
 
+=======
+CLAUDE_IMAGE      := claude-code-env
+CLAUDE_CONTAINER  := claude-code-emc
+WORKSPACE         := $(shell pwd)
+
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 # Load .env if exists
 ifneq (,$(wildcard .env))
     include .env
@@ -38,6 +45,7 @@ endif
 check-security:
 	@echo "==> Security pre-flight checks..."
 	@test ! -f .env || (grep -q "sk-ant-PASTE" .env && echo "  ✗ .env still has placeholder key — edit it!" && exit 1 || echo "  ✓ .env has a real key")
+<<<<<<< HEAD
 	@if echo "$$ANTHROPIC_API_KEY" | grep -q "sk-ant-PASTE"; then \
 		echo "  - Skipping git history check (placeholder key)"; \
 	elif git log --all -S "$$ANTHROPIC_API_KEY" --oneline 2>/dev/null | head -1 | grep -q .; then \
@@ -45,6 +53,9 @@ check-security:
 	else \
 		echo "  ✓ No API key in git history"; \
 	fi
+=======
+	@grep -rq "ANTHROPIC_API_KEY" .git/ 2>/dev/null && echo "  ✗ WARNING: API key found in git history!" || echo "  ✓ No API key in git history"
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 	@echo "  ✓ Security checks passed"
 
 # ============================
@@ -72,9 +83,16 @@ update-claude: ## Rebuild Claude Code image, forcing latest npm version (busts c
 start: check-api-key check-security ## Start Claude Code container (interactive shell)
 	docker run -it --rm \
 		--name $(CLAUDE_CONTAINER) \
+<<<<<<< HEAD
 		$(DOCKER_ENV) \
 		$(DOCKER_LIMITS) \
 		$(DOCKER_VOLUMES) \
+=======
+		--env ANTHROPIC_API_KEY \
+		--env ANTHROPIC_MODEL \
+		--env NTFY_TOPIC \
+		-v $(WORKSPACE)/WorkingDir:/workspace \
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 		$(CLAUDE_IMAGE)
 
 .PHONY: claude
@@ -83,16 +101,26 @@ claude: check-api-key check-security ## Launch Claude Code with --dangerously-sk
 	@echo "    - Set a spending limit at console.anthropic.com → Billing"
 	@echo "    - Claude Code has FULL shell access (--dangerously-skip-permissions)"
 	@echo "    - Monitor usage at console.anthropic.com → Usage"
+<<<<<<< HEAD
 	@echo "    - Container limits: memory=$(DOCKER_MEMORY), cpus=$(DOCKER_CPUS)"
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 	@echo ""
 	@if [ "$(YES)" != "1" ]; then \
 		read -p "    Continue? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1; \
 	fi
 	docker run -it --rm \
 		--name $(CLAUDE_CONTAINER) \
+<<<<<<< HEAD
 		$(DOCKER_ENV) \
 		$(DOCKER_LIMITS) \
 		$(DOCKER_VOLUMES) \
+=======
+		--env ANTHROPIC_API_KEY \
+		--env ANTHROPIC_MODEL \
+		--env NTFY_TOPIC \
+		-v $(WORKSPACE)/WorkingDir:/workspace \
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 		$(CLAUDE_IMAGE) \
 		bash -c "cd /workspace && claude --dangerously-skip-permissions"
 
@@ -101,7 +129,11 @@ claude-attach: ## Open an additional Claude session inside the already-running c
 	docker exec -it $(CLAUDE_CONTAINER) bash -c "cd /workspace && claude --dangerously-skip-permissions"
 
 .PHONY: cc
+<<<<<<< HEAD
 cc: check-api-key check-security ## Smart open: starts Claude if not running, attaches if already running
+=======
+cc: check-api-key ## Smart open: starts Claude if not running, attaches if already running
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 	@if docker ps -q -f name=$(CLAUDE_CONTAINER) | grep -q .; then \
 		echo "==> Container running — opening new session..."; \
 		docker exec -it $(CLAUDE_CONTAINER) \
@@ -110,14 +142,24 @@ cc: check-api-key check-security ## Smart open: starts Claude if not running, at
 		echo "==> No container running — starting fresh..."; \
 		if [ "$(YES)" != "1" ]; then \
 			echo "    Claude Code has FULL shell access (--dangerously-skip-permissions)"; \
+<<<<<<< HEAD
 			echo "    Container limits: memory=$(DOCKER_MEMORY), cpus=$(DOCKER_CPUS)"; \
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 			read -p "    Continue? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1; \
 		fi; \
 		docker run -it --rm \
 			--name $(CLAUDE_CONTAINER) \
+<<<<<<< HEAD
 			$(DOCKER_ENV) \
 			$(DOCKER_LIMITS) \
 			$(DOCKER_VOLUMES) \
+=======
+			--env ANTHROPIC_API_KEY \
+			--env ANTHROPIC_MODEL \
+			--env NTFY_TOPIC \
+			-v $(WORKSPACE)/WorkingDir:/workspace \
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 			$(CLAUDE_IMAGE) \
 			bash -c "cd /workspace && claude --dangerously-skip-permissions"; \
 	fi
@@ -139,8 +181,11 @@ verify: check-api-key ## Verify the full setup
 	@test -d WorkingDir/LectureSlides && echo "  ✓ LectureSlides/" || echo "  ✗ WorkingDir/LectureSlides/ missing"
 	@echo "==> Checking Claude Code version inside container..."
 	@docker run --rm $(CLAUDE_IMAGE) claude --version 2>/dev/null || echo "  ⚠ Could not check version"
+<<<<<<< HEAD
 	@echo "==> Checking cache volume..."
 	@docker volume inspect $(CACHE_VOLUME) >/dev/null 2>&1 && echo "  ✓ Cache volume '$(CACHE_VOLUME)'" || echo "  ⚠ Cache volume missing (will be created on first run)"
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 	@echo "==> Checking ntfy.sh notification..."
 	@if [ -z "$(NTFY_TOPIC)" ]; then \
 		echo "  ⚠ NTFY_TOPIC not set — skipping (add NTFY_TOPIC=your-topic to .env)"; \
@@ -156,6 +201,7 @@ verify: check-api-key ## Verify the full setup
 	@echo "==> Done."
 
 # ============================
+<<<<<<< HEAD
 # PIPELINE (session-per-phase, fresh context each call)
 # ============================
 # Each `claude -p` call starts a fresh conversation -- no cross-task context
@@ -252,6 +298,8 @@ check-output: ## Verify that expected output files were generated
 	fi
 
 # ============================
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 # CLEANUP
 # ============================
 
@@ -264,10 +312,13 @@ clean: stop ## Remove container + Claude image
 	-docker rm $(CLAUDE_CONTAINER) 2>/dev/null
 	-docker rmi $(CLAUDE_IMAGE) 2>/dev/null
 
+<<<<<<< HEAD
 .PHONY: clean-all
 clean-all: clean ## Remove container + image + cache volume
 	-docker volume rm $(CACHE_VOLUME) 2>/dev/null
 
+=======
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 # ============================
 # HELP
 # ============================
@@ -285,6 +336,7 @@ help: ## Show this help
 	@echo "   4. make verify           # Check everything"
 	@echo "   5. make claude           # Launch Claude Code"
 	@echo ""
+<<<<<<< HEAD
 	@echo " AUTOMATED PIPELINE (recommended — avoids context blowup):"
 	@echo "   make pipeline            # extract-all -> verify -> synthesize -> pdfs"
 	@echo "   make extract-chap-1      # Extract a single chapter (fresh session)"
@@ -297,6 +349,11 @@ help: ## Show this help
 	@echo "   make cc                  # Smart open: starts or attaches automatically"
 	@echo "   make cc YES=1            # Same, skip confirmation on first start"
 	@echo "   make check-output        # Verify outputs after Claude finishes"
+=======
+	@echo " TIPS:"
+	@echo "   make cc                  # Smart open: starts or attaches automatically"
+	@echo "   make cc YES=1            # Same, skip confirmation on first start"
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 	@echo ""
 	@echo " COMMANDS:"
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \

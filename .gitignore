@@ -3,6 +3,7 @@
 
 # ---- Copyrighted lecture materials ----
 WorkingDir/LectureSlides/
+*.png
 
 # ---- Legacy root-level .claude config (inert) ----
 /.claude/
