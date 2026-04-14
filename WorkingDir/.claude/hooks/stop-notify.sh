@@ -2,7 +2,12 @@
 # Claude Code Stop hook - sends ntfy.sh notification when a session ends.
 # NTFY_TOPIC is passed as an environment variable via docker run --env NTFY_TOPIC.
 
+<<<<<<< HEAD
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+LOG_FILE="$HOOK_DIR/hook-errors.log"
+=======
 DIR="${CLAUDE_PROJECT_DIR:-.}"
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 
 # Read hook input from stdin
 INPUT=$(cat)
@@ -16,6 +21,9 @@ TOPIC="${NTFY_TOPIC}"
 [ -z "$TOPIC" ] && exit 0
 
 # Build a descriptive summary (<=200 chars) from the session transcript
+<<<<<<< HEAD
+MSG=$(echo "$INPUT" | python3 "$HOOK_DIR/build-summary.py" 2>>"$LOG_FILE" || echo "Claude Code: Session completed.")
+=======
 MSG=$(echo "$INPUT" | python3 -c "
 import sys, json
 
@@ -65,6 +73,7 @@ if len(msg) > MAX:
 
 print(msg)
 " 2>/dev/null || echo "Claude Code: Session completed.")
+>>>>>>> c5b0b435f3af3f08f08cea2c9c10c79f92a8dbe0
 
 curl -s -d "$MSG" "https://ntfy.sh/$TOPIC" >/dev/null 2>&1
 
